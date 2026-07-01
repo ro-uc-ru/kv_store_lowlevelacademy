@@ -3,8 +3,7 @@
 
 # include <stdlib.h>
 
-typedef struct kv
-{
+typedef struct kv {
   char* key;
   char* value;
 } kv_entry_t;
