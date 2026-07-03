@@ -3,7 +3,7 @@
 
 # include <stdlib.h>
 
-typedef struct kv {
+typedef struct {
   char* key;
   char* value;
 } kv_entry_t;
@@ -16,4 +16,5 @@ typedef struct {
 
 
 kv_t* kv_init(size_t capacity);
+int kv_put(kv_t* db, char* key, char* value);
 # endif
