@@ -80,3 +80,35 @@ int kv_put(kv_t* db, char* key, char* value) {
   }
   return -2;
 }
+
+
+// fn kv_get
+// params:
+// - db: pointer to a key value store (db)
+// - key: pointer to the key value
+// return types:
+// - pointer to the key: No error
+// - NULL: if not found
+char* kv_get(kv_t* db, char* key) {
+  if (!db || !key) return NULL;
+  size_t idx = hash(key, db -> capacity);
+
+  for (int i = 0; i < db -> capacity -1; i++) {
+    size_t real_idx = (idx + i) % db -> capacity;
+    kv_entry_t* entry = &db -> entries[real_idx];
+
+    // there is no key, therefore no value
+    if (entry -> key == NULL ) {
+      return NULL;
+    }
+
+    // find an entry and the keys match
+    if (entry -> key && 
+      entry -> key != (void*) TOMBSTONE && 
+      !strcmp(entry ->key, key)) {
+        return entry -> value;
+      }
+  }
+
+  return NULL;
+}
