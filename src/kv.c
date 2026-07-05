@@ -3,6 +3,12 @@
 # include <stdlib.h>
 # define TOMBSTONE 0x1
 
+// fn kv_init
+// params:
+// - capacity: total capacity for the key value store
+// return types:
+// - pointer to a kv store with capacity the same as the param: if there is no error 
+// - NULL: if there is any error or capacity is 0
 kv_t* kv_init(size_t capacity) {
   if (capacity == 0) return NULL;
 
@@ -111,4 +117,41 @@ char* kv_get(kv_t* db, char* key) {
   }
 
   return NULL;
+}
+
+// fn kv_delete
+// params:
+// - db: pointer to a key value store (db)
+// - key: pointer to the key value
+// return types:
+// -  idx of deletion: on succes deletion
+// - -1: if there is an error
+int kv_delete(kv_t* db, char* key) {
+   if (!db || !key) return -1;
+  size_t idx = hash(key, db -> capacity);
+
+  for (int i = 0; i < db -> capacity -1; i++) {
+    size_t real_idx = (idx + i) % db -> capacity;
+    kv_entry_t* entry = &db -> entries[real_idx];
+
+    // we hit an empty entry
+    if (entry -> key == NULL){
+      return -1;
+    }
+
+    if (entry -> key &&
+      entry -> key != (void*) TOMBSTONE &&
+      !strcmp(entry -> key, key)
+    ) {
+      free(entry -> key);
+      free(entry -> value);
+      db -> count--;
+      entry -> key = (void*) TOMBSTONE;
+      entry -> value = NULL;
+      return real_idx;
+    }
+
+  }
+
+  return -1;
 }

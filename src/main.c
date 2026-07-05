@@ -21,6 +21,10 @@ int main() {
 
   char* val = kv_get(table, "hehe");
   printf("%s\n", val);
-  free(table);
+  kv_delete(table, "hehe");
+  val = NULL;
+  val = kv_get(table, "hehe");
+  printf("%p\n", val);
+
   return 0;
 }
