@@ -56,7 +56,7 @@ int kv_put(kv_t* db, char* key, char* value) {
   if (!db || !key || !value) return -1; //check if any of the params is null, exit 
 
   size_t idx = hash(key, db -> capacity);
-  for (int i = 0; i < db -> capacity -1; i++) {
+  for (size_t i = 0; i < db -> capacity; i++) {
     size_t real_idx = (idx + i) % db -> capacity;
     kv_entry_t* entry = &db -> entries[real_idx];
 
@@ -66,6 +66,7 @@ int kv_put(kv_t* db, char* key, char* value) {
         free(newval);
         return -1;
       }
+      free(entry -> value);
       entry -> value = newval;
       return 0;
     }
@@ -99,7 +100,7 @@ char* kv_get(kv_t* db, char* key) {
   if (!db || !key) return NULL;
   size_t idx = hash(key, db -> capacity);
 
-  for (int i = 0; i < db -> capacity -1; i++) {
+  for (size_t i = 0; i < db -> capacity; i++) {
     size_t real_idx = (idx + i) % db -> capacity;
     kv_entry_t* entry = &db -> entries[real_idx];
 
@@ -130,7 +131,7 @@ int kv_delete(kv_t* db, char* key) {
    if (!db || !key) return -1;
   size_t idx = hash(key, db -> capacity);
 
-  for (int i = 0; i < db -> capacity -1; i++) {
+  for (size_t i = 0; i < db -> capacity ; i++) {
     size_t real_idx = (idx + i) % db -> capacity;
     kv_entry_t* entry = &db -> entries[real_idx];
 
@@ -155,3 +156,32 @@ int kv_delete(kv_t* db, char* key) {
 
   return -1;
 }
+
+// fn kv_free
+// params:
+// - db: pointer to a key value store (db)
+// return types:
+// -  0: on succes free of db
+// - -1: if there is an error
+int kv_free(kv_t* db) {
+  if (!db) return -1;
+
+  // free entries
+  for (size_t i = 0;  i < db -> capacity; i++) {
+    kv_entry_t *entry = &db -> entries[i];
+
+    if (entry -> key && entry -> key != (void*) TOMBSTONE)  {
+      free(entry -> key);
+      free(entry -> value);
+      entry -> key = NULL;
+      entry -> value = NULL;
+      db -> count--;
+    }
+  }
+
+  free(db -> entries);
+  free(db);
+  return 0;
+}
+
+

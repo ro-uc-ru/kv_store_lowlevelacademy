@@ -26,5 +26,6 @@ int main() {
   val = kv_get(table, "hehe");
   printf("%p\n", val);
 
+  kv_free(table);
   return 0;
 }
