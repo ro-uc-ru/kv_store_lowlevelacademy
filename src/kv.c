@@ -163,8 +163,8 @@ int kv_delete(kv_t* db, char* key) {
 // return types:
 // -  0: on succes free of db
 // - -1: if there is an error
-int kv_free(kv_t* db) {
-  if (!db) return -1;
+void kv_free(kv_t* db) {
+  if (!db) return;
 
   // free entries
   for (size_t i = 0;  i < db -> capacity; i++) {
@@ -181,7 +181,7 @@ int kv_free(kv_t* db) {
 
   free(db -> entries);
   free(db);
-  return 0;
+  return;
 }
 
 
